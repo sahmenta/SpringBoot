@@ -1,63 +1,80 @@
 package com.example.carros.domain;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
+import com.example.carros.domain.dto.CarroDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 
 @Service
 public class CarroService {
-	
+
 	@Autowired
-	private CarroRepository repository;
+	private CarroRepository rep;
 
-	public Iterable<Carro> getCarros(){
-		return repository.findAll();
-		
+
+	public List<CarroDTO> getCarros() {
+		List<Carro> carros = rep.findAll();
+		return carros.stream().map(CarroDTO::new).collect(Collectors.toList());
 	}
 
-	public Optional<Carro> getCarroById(Long id) {
-		return repository.findById(id);
-	}
-	
-	public Iterable<Carro> getCarrosByTipo(String tipo) {
-		return repository.findByTipo(tipo);
+
+	public Optional<CarroDTO> getCarroById(Long id) {
+
+		Optional<Carro> carro = rep.findById(id);
+
+		return carro.map(value -> Optional.of(new CarroDTO(value))).orElse(null);
 	}
 
-	public Carro insert(Carro carro) {
-		return repository.save(carro);
-		
+
+	public List<CarroDTO> getCarroByTipo(String tipo) {
+		List<Carro> carros = rep.findByTipo(tipo);
+		return carros.stream().map(CarroDTO::new).collect(Collectors.toList());
 	}
 
-	public Carro update(Carro carro, Long id) {
-		Assert.notNull(id, "Não foi possível atualizar o registro");
-		
-		
-		return getCarroById(id).map(db->{
-			
+
+	public Carro saveCarro(Carro carro) {
+		return rep.save(carro);
+	}
+
+
+	public CarroDTO updateCarro(Long id, Carro carro) {
+		Assert.notNull(id, "Id inválido!");
+
+		Optional<Carro> optional = rep.findById(id);
+		if(optional.isPresent()){
+			Carro db = optional.get();
 			db.setNome(carro.getNome());
 			db.setTipo(carro.getTipo());
-			System.out.println("Carro id: " + db.getId());
-			
-			repository.save(db);
-			
-			return db;	
-		}).orElseThrow(()-> new RuntimeException("Não foi possível atualizar o registro"));
-	
+
+			rep.save(db);
+
+			return CarroDTO.create(db);
+		}
+		else{
+			throw new RuntimeException("Não foi possível alterar o carro.");
+		}
+
+		// Optional<Carro> c = rep.findById(id);
+		// if (c.isPresent()) {
+		//     Carro db = c.get();
+		//     db.setNome(carro.getNome());
+		//     db.setTipo(carro.getTipo());
+		//     return rep.save(db);
+		// }
 	}
 
-	public String delete(Long id) {
-		
-		Optional<Carro> carro = getCarroById(id);
-		if(carro.isPresent()){
-			repository.deleteById(id);
-			return "Carro deletado com sucesso";
+
+	public boolean delete(Long id) {
+		Optional<CarroDTO> c = getCarroById(id);
+		if (c.isPresent()) {
+			rep.deleteById(id);
+			return true;
 		}
-		return "Carro não encontrado";
-		
+		return false;
+
 	}
-	
 }
