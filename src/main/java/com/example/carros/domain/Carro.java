@@ -23,4 +23,19 @@ public class Carro {
 	@Column(name="tipo")
 	private String tipo;
 
+	@Column(name="descricao")
+	private String descricao;
+
+	@Column(name="url_foto")
+	private String urlFoto;
+
+	@Column(name="url_video")
+	private String urlVideo;
+
+	@Column(name="latitude")
+	private String latitude;
+
+	@Column(name="longitude")
+	private String longitude;
+
 }

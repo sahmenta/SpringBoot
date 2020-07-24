@@ -35,7 +35,7 @@ public class CarroController {
 
 	@GetMapping("/{id}")
 	public ResponseEntity<CarroDTO> getById (@PathVariable("id") Long id) {
-		Optional<Carro> carro = carroService.getCarroById(id);
+		Optional<CarroDTO> carro = carroService.getCarroById(id);
 
 		return carro
 				.map(ResponseEntity::ok)
@@ -59,13 +59,19 @@ public class CarroController {
 	@PostMapping
 	public ResponseEntity saveCarro (@RequestBody Carro carro) {
 
-		try{
-			Carro c = carroService.saveCarro(carro);
-			return ResponseEntity.created(null).build();
-		}catch (Exception e){
+		try {
+			CarroDTO c = carroService.saveCarro(carro);
+
+			URI location = getUri(c.getId());
+			return ResponseEntity.created(location).build();
+		}catch (Exception ex){
 			return ResponseEntity.badRequest().build();
 		}
+	}
 
+	private URI getUri(Long id){
+		return ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}")
+				.buildAndExpand().toUri();
 	}
 
 	@PutMapping("/{id}")
@@ -73,7 +79,7 @@ public class CarroController {
 
 		carro.setId(id);
 
-		Carro c = carroService.updateCarro(id, carro);
+		CarroDTO c = carroService.updateCarro(carro, id);
 
 		return c != null ?
 				ResponseEntity.ok(c) :

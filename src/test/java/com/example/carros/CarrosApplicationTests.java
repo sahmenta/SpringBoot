@@ -2,6 +2,7 @@ package com.example.carros;
 
 import com.example.carros.domain.Carro;
 import com.example.carros.domain.CarroService;
+import com.example.carros.domain.dto.CarroDTO;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,6 +10,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
 
+import java.util.List;
 import java.util.Optional;
 
 import static junit.framework.TestCase.*;
@@ -21,19 +23,20 @@ public class CarrosApplicationTests {
 	private CarroService carroService;
 
 	@Test
-	public void test1() {
+	public void testSave() {
 
 		Carro carro  = new Carro();
 		carro.setNome("Ferrari");
 		carro.setTipo("esportivos");
 
-		Carro c = carroService.saveCarro(carro);
-
-		Long id = c.getId();
+		CarroDTO c = carroService.saveCarro(carro);
 
 		assertNotNull(c);
 
-		Optional<Carro> op = carroService.getCarroById(id);
+		Long id = c.getId();
+		assertNotNull(id);
+
+		Optional<CarroDTO> op = carroService.getCarroById(id);
 		assertTrue(op.isPresent());
 		c = op.get();
 
@@ -44,5 +47,32 @@ public class CarrosApplicationTests {
 
 		assertFalse(carroService.getCarroById(id).isPresent());
 
+	}
+
+	@Test
+	public void testLista(){
+		List<CarroDTO> carros = carroService.getCarros();
+		assertEquals(30, carros.size());
+	}
+
+	@Test
+	public void testGet(){
+
+		Optional<CarroDTO> op = carroService.getCarroById(11L);
+
+		assertTrue(op.isPresent());
+
+		CarroDTO c = op.get();
+
+		assertEquals("Ferrari FF", c.getNome());
+	}
+
+	@Test
+	public void testCarrosByTipo(){
+
+		assertEquals(10, carroService.getCarroByTipo("esportivos").size());
+		assertEquals(10, carroService.getCarroByTipo("classicos").size());
+		assertEquals(10, carroService.getCarroByTipo("luxo").size());
+		assertEquals(0, carroService.getCarroByTipo("x").size());
 	}
 }

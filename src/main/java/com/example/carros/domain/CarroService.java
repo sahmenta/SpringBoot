@@ -18,30 +18,31 @@ public class CarroService {
 
 	public List<CarroDTO> getCarros() {
 		List<Carro> carros = rep.findAll();
-		return carros.stream().map(CarroDTO::new).collect(Collectors.toList());
+		return carros.stream().map(CarroDTO::create).collect(Collectors.toList());
 	}
 
 
 	public Optional<CarroDTO> getCarroById(Long id) {
 
-		Optional<Carro> carro = rep.findById(id);
-
-		return carro.map(value -> Optional.of(new CarroDTO(value))).orElse(null);
+		return rep.findById(id).map(CarroDTO::create);
 	}
 
 
 	public List<CarroDTO> getCarroByTipo(String tipo) {
 		List<Carro> carros = rep.findByTipo(tipo);
-		return carros.stream().map(CarroDTO::new).collect(Collectors.toList());
+		return carros.stream().map(CarroDTO::create).collect(Collectors.toList());
 	}
 
 
-	public Carro saveCarro(Carro carro) {
-		return rep.save(carro);
+	public CarroDTO saveCarro(Carro carro) {
+
+		Assert.isNull(carro.getId(), "Não foi possível inserir o registro");
+
+		return CarroDTO.create(rep.save(carro));
 	}
 
 
-	public CarroDTO updateCarro(Long id, Carro carro) {
+	public CarroDTO updateCarro(Carro carro, Long id) {
 		Assert.notNull(id, "Id inválido!");
 
 		Optional<Carro> optional = rep.findById(id);
@@ -49,13 +50,14 @@ public class CarroService {
 			Carro db = optional.get();
 			db.setNome(carro.getNome());
 			db.setTipo(carro.getTipo());
+			System.out.println("Carro id " + db.getId());
 
 			rep.save(db);
 
 			return CarroDTO.create(db);
 		}
 		else{
-			throw new RuntimeException("Não foi possível alterar o carro.");
+			return null;
 		}
 
 		// Optional<Carro> c = rep.findById(id);
