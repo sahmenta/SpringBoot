@@ -65,12 +65,14 @@ public class CarroController {
 			URI location = getUri(c.getId());
 			return ResponseEntity.created(location).build();
 		}catch (Exception ex){
+			System.out.println(ex.getMessage());
 			return ResponseEntity.badRequest().build();
 		}
 	}
 
 	private URI getUri(Long id){
-		return ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}")
+		String idLocation = "/"+ id;
+		return ServletUriComponentsBuilder.fromCurrentRequest().path(idLocation)
 				.buildAndExpand().toUri();
 	}
 

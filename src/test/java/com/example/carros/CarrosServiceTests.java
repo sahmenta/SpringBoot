@@ -17,7 +17,7 @@ import static junit.framework.TestCase.*;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
-public class CarrosApplicationTests {
+public class CarrosServiceTests {
 
 	@Autowired
 	private CarroService carroService;
@@ -52,27 +52,27 @@ public class CarrosApplicationTests {
 	@Test
 	public void testLista(){
 		List<CarroDTO> carros = carroService.getCarros();
-		assertEquals(30, carros.size());
+		assertEquals(9, carros.size());
 	}
 
 	@Test
 	public void testGet(){
 
-		Optional<CarroDTO> op = carroService.getCarroById(11L);
+		Optional<CarroDTO> op = carroService.getCarroById(8L);
 
 		assertTrue(op.isPresent());
 
 		CarroDTO c = op.get();
 
-		assertEquals("Ferrari FF", c.getNome());
+		assertEquals("Ferrari Enzo", c.getNome());
 	}
 
 	@Test
 	public void testCarrosByTipo(){
 
-		assertEquals(10, carroService.getCarroByTipo("esportivos").size());
-		assertEquals(10, carroService.getCarroByTipo("classicos").size());
-		assertEquals(10, carroService.getCarroByTipo("luxo").size());
+		assertEquals(3, carroService.getCarroByTipo("esportivos").size());
+		assertEquals(3, carroService.getCarroByTipo("classicos").size());
+		assertEquals(3, carroService.getCarroByTipo("luxo").size());
 		assertEquals(0, carroService.getCarroByTipo("x").size());
 	}
 }
