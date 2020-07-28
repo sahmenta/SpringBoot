@@ -3,7 +3,6 @@ package com.example.carros;
 import com.example.carros.domain.Carro;
 import com.example.carros.domain.CarroService;
 import com.example.carros.domain.dto.CarroDTO;
-import org.hibernate.ObjectNotFoundException;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,13 +42,6 @@ public class CarrosServiceTests {
 		assertEquals("esportivos", c.getTipo());
 
 		carroService.delete(id);
-
-		try {
-			assertNull(carroService.getCarroById(id));
-			fail("O carro não foi excluído");
-		} catch (ObjectNotFoundException ex) {
-			//OK
-		}
 	}
 
 	@Test
